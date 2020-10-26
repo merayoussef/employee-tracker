@@ -1,5 +1,5 @@
 const inquirer = require("inquirer");
-const mysql = require("mysql");
+const mysql = require("mysql2");
 const consoleTable = require("console.table");
 
 const connection = mysql.createConnection({
@@ -11,9 +11,10 @@ const connection = mysql.createConnection({
 });
 
 connection.connect(function (err) {
-    if (err) throw err;
-    console.log("Employee-Tracker");
+    if (err) { throw err;
+    } else {
     promptQuestions();
+    }
 });
 
 function promptQuestions() {
