@@ -1,13 +1,13 @@
 const inquirer = require("inquirer");
-const mysql = require("mysql2");
+const mysql = require("mysql");
 const consoleTable = require("console.table");
 
 const connection = mysql.createConnection({
     host: 'localhost',
     user: 'root',
     password: 'root',
-    port: 3307,
-    database: "employees_DB"
+    database: "employees.db",
+    port: 3306
 });
 
 connection.connect(function (err) {
@@ -58,18 +58,15 @@ function promptQuestions() {
                 case "Update employee role":
                     updateEmployee();
                     break;
-                default:
-                    quit();
             }
         });
 }
 
 function viewAllDepartment() {
-    // select from the db
     let query = "SELECT * FROM department";
     connection.query(query, function (err, res) {
         if (err) throw err;
-        console.table(res);
+        consoleTable(res);
         promptQuestions();
     });
 }
@@ -78,7 +75,7 @@ function viewAllRoles() {
     let query = "SELECT * FROM role";
     connection.query(query, function (err, res) {
         if (err) throw err;
-        console.table(res);
+        consoleTable(res);
         promptQuestions();
     });
 }
@@ -87,7 +84,7 @@ function viewAllEmployees() {
     let query = "SELECT * FROM employee";
     connection.query(query, function (err, res) {
         if (err) throw err;
-        console.table(res);
+        consoleTable(res);
         promptQuestions();
     });
 
@@ -103,7 +100,7 @@ function addADepartment() {
     }).then(function (answer) {
         connection.query("INSERT INTO department (name) VALUES (?)", [answer.departmentName], function (err, res) {
             if (err) throw err;
-            console.table(res)
+            consoleTable(res)
             promptQuestions()
         })
     })
@@ -132,7 +129,7 @@ function addRole() {
         .then(function (answer) {
             connection.query("INSERT INTO role (title, salary, department_id) VALUES (?, ?, ?)", [answer.role, answer.salary, answer.deptID], function (err, res) {
                 if (err) throw err;
-                console.table(res);
+                consoleTable(res);
                 promptQuestions();
             });
         });
@@ -167,7 +164,7 @@ function addAnEmployee() {
 
             connection.query("INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES (?, ?, ?, ?)", [answer.firstName, answer.lastName, answer.roleID, answer.managerID], function (err, res) {
                 if (err) throw err;
-                console.table(res);
+                consoleTable(res);
                 promptQuestions();
             });
         });
@@ -191,13 +188,8 @@ function updateEmployee() {
         .then(function (answer) {
             connection.query('UPDATE employee SET role_id=? WHERE first_name= ?', [answer.updateRole, answer.eeUpdate], function (err, res) {
                 if (err) throw err;
-                console.table(res);
+                consoleTable(res);
                 promptQuestions();
             });
         });
-}
-
-function quit() {
-    connection.end();
-    process.exit();
 }
