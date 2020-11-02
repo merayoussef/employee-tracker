@@ -193,7 +193,6 @@ function updateEmployee(employeeChoices) {
                 if (err) throw err;
                 console.table(res);
                 promptQuestions();
-                viewAllEmployees();
             });
         });
 }
