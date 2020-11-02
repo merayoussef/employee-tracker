@@ -92,7 +92,6 @@ function viewAllEmployees() {
 
 function addADepartment() {
     inquirer.prompt({
-
         type: "input",
         message: "What is the name of the department?",
         name: "departmentName"
@@ -169,15 +168,20 @@ function addAnEmployee() {
         });
 }
 
-function updateEmployee() {
+// WHEN I choose to update an employee role
+// THEN I am prompted to select an employee to update and their new role and this information is updated in the database 
+function updateEmployee(employeeChoices) {
+    const employeeNames = employeeChoices.map((employeeObject) => {
+        const name = `${employeeObject.firstName} ${employeeObject.lastName}`
+    })
     inquirer
         .prompt([
             {
-                type: "input",
+                type: "list",
                 message: "Which employee would you like to update?",
-                name: "eeUpdate"
+                name: "employeeChoice",
+                choices: employeeNames
             },
-
             {
                 type: "input",
                 message: "What do you want to update to?",
@@ -185,10 +189,92 @@ function updateEmployee() {
             }
         ])
         .then(function (answer) {
-            connection.query('UPDATE employee SET role_id=? WHERE first_name= ?', [answer.updateRole, answer.eeUpdate], function (err, res) {
+            connection.query('UPDATE employee SET role_id=? WHERE first_name= ?', [answer.updateRole, answer.updateEmp], function (err, res) {
                 if (err) throw err;
                 console.table(res);
                 promptQuestions();
+                viewAllEmployees();
             });
         });
 }
+
+
+function getAllEmployees() {
+    return new Promise((resolve, reject) => {
+        // Make network call (assynchronous behavior)
+        connection.query('SELECT * FROM employees', (err, result) => {
+            if (err) {
+                return reject(err);
+            }
+            resolve(result);
+        })
+    })
+}
+
+
+
+function updateEmployee(employeeId) {
+    return new Promise((resolve, reject) => {
+        connection.query('Update sql string', (error, result) => {
+            if (error) {
+                return reject(error)
+            } else {
+                resolve(result);
+            }
+        })
+    })
+}
+
+
+// function updateEmployeePrompt(employeeChoices) {
+
+//     const employeeNames = employeeChoices.map((employeeObject) => {
+//         const name = `${employeeObject.firstName} ${employeeObject.lastName}`
+//     })
+
+//     return inquirer.prompt({
+//         message: "Which employee do you want to update?",
+//         choices: employeeNames,
+//         type: 'list',
+//         name: 'employeeChoice'
+//     })
+// }
+
+// let employees = [];
+
+// const menu = async() => {
+//     const answers = await inquirer.prompt({
+//         name: "menu",
+//         message: "Choose an option",
+//         choices: ["Select employees", "Update Employees"]
+//     })
+//     const menuChoice = answers.menu;
+
+//     if (menuChoice === 'Select employees') {
+//         try {
+//             employees = await getAllEmployees();
+//             // Display employees...
+//         } catch(err) {
+
+//         }
+
+//     } else if (menuChoice === 'Update Employees') {
+//         if (employees.length === 0) {
+//             try {
+//                 employees = await getAllEmployees();
+    
+//             } catch(err) {
+    
+//             }
+//         } 
+        
+//         const usersEmployeeToUpdateChoice = await updateEmployeePrompt(employees);
+//         const employeeToUpdate = usersEmployeeToUpdateChoice.employeeChoice;
+//         const updateResult = await updateEmployee(employeeToUpdate);
+        
+//     }
+
+//     menu();
+
+// }
+// menu();
